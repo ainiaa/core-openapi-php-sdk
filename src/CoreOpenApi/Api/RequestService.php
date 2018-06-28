@@ -15,9 +15,9 @@ class RequestService
     protected $params = array();
     protected $rows_num = "50";
 
-    public function __construct($token, $clientClassName, Config $config)
+    public function __construct($client)
     {
-        $this->client = new $clientClassName($token, $config);
+        $this->client = $client;
     }
 
     public function check()
@@ -40,7 +40,12 @@ class RequestService
         $this->action = $action;
         $this->params = $params;
 
-        return $this->client->execute($this);
+        return $this->formatResponse($this->client->execute($this));
+    }
+
+    public function formatResponse($response)
+    {
+        return $response;
     }
 
 }

@@ -18,7 +18,7 @@ abstract class CoreClient
     /**
      * @var Config
      */
-    private $config;
+    protected $config;
     private $logger;
 
     protected $connectTimeout = 3000;
@@ -70,13 +70,16 @@ abstract class CoreClient
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
 
-        if (is_array($postFields) && $postFields)
+        if ($postFields)
         {
             if (!isset($curlOptions[CURLOPT_HTTPHEADER]))
             {
                 $header = array('content-type: application/x-www-form-urlencoded; charset=UTF-8');
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-                $postFields = http_build_query($postFields, '', '&');
+                if (is_array($postFields))
+                {
+                    $postFields = http_build_query($postFields, '', '&');
+                }
             }
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
@@ -112,9 +115,40 @@ abstract class CoreClient
      */
     public abstract function buildRequestParams($params);
 
-    public function getRequestUri($action)
+    /**
+     * 获得token
+     * @return mixed
+     */
+    public abstract function getToken();
+
+    /**
+     * @param      $action
+     * @param null $params
+     *
+     * @return string
+     */
+    public function getRequestUri($action, $params = null)
     {
-        return $this->requestUrl . $action;
+        if (empty($params))
+        {
+            $params = '';
+        }
+
+        return $this->requestUrl . $action . $params;
+    }
+
+    public function getCurlOption($method)
+    {
+        $curlOption = $this->config->getParamByKey('curlOption');
+        if (empty($curlOption))
+        {
+            return [];
+        }
+        else if (isset($curlOption[$method]))
+        {
+            return $curlOption[$method];
+        }
+
     }
 
     /**
@@ -139,8 +173,9 @@ abstract class CoreClient
         $requestParams = $this->buildRequestParams($request->getParams());
         try
         {
-            $requestUrl = $this->getRequestUri($request->getAction());
-            $resp       = $this->doRequest($requestUrl, $requestParams);
+            $requestUrl  = $this->getRequestUri($request->getAction(), $requestParams);
+            $curlOptions = $this->getCurlOption($request->getAction());
+            $resp        = $this->doRequest($requestUrl, $requestParams, $curlOptions);
             if ($this->logger != null)
             {
                 $this->logger->info("request data: " . json_encode($requestParams, JSON_UNESCAPED_UNICODE));
