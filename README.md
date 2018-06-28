@@ -11,3 +11,6 @@
 php
     composer require ddxq/core-openapi-php-sdk
 ```
+
+## PS
+当前类库只是一个通用类库，具体的逻辑还需要根据业务来实现。
