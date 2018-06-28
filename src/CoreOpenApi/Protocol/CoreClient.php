@@ -137,18 +137,22 @@ abstract class CoreClient
         return $this->requestUrl . $action . $params;
     }
 
+    /**
+     * 获得 curl option相关配置
+     *
+     * @param $method
+     *
+     * @return array
+     */
     public function getCurlOption($method)
     {
         $curlOption = $this->config->getParamByKey('curlOption');
-        if (empty($curlOption))
-        {
-            return [];
-        }
-        else if (isset($curlOption[$method]))
+        if (isset($curlOption[$method]))
         {
             return $curlOption[$method];
         }
 
+        return [];
     }
 
     /**

@@ -26,12 +26,12 @@ class Config
     {
         if (empty($appKey))
         {
-            throw new Exception("app_key is required");
+            throw new Exception('app_key is required');
         }
 
         if (empty($appSecret))
         {
-            throw new Exception("app_secret is required");
+            throw new Exception('app_secret is required');
         }
 
         $this->appKey    = $appKey;
@@ -49,11 +49,22 @@ class Config
         return $this->appSecret;
     }
 
+    /**
+     * 获得所有的配置信息
+     * @return array
+     */
     public function getExtParams()
     {
         return $this->extParams;
     }
 
+    /**
+     * 根据key获得对应的配置信息
+     *
+     * @param $key
+     *
+     * @return mixed|null
+     */
     public function getParamByKey($key)
     {
         if (isset($this->extParams[$key]))
@@ -64,6 +75,10 @@ class Config
         return null;
     }
 
+    /**
+     * 获得请求地址
+     * @return mixed|null|string
+     */
     public function getRequestUrl()
     {
         if (empty($this->requestUrl))
@@ -74,16 +89,32 @@ class Config
         return $this->requestUrl;
     }
 
+    /**
+     * 设置请求地址
+     *
+     * @param $requestUrl
+     */
     public function setRequestUrl($requestUrl)
     {
         $this->requestUrl = $requestUrl;
     }
 
+    /**
+     * 获得logger对象
+     * @return mixed
+     */
     public function getLogger()
     {
         return $this->logger;
     }
 
+    /**
+     * 设置 logger 对象
+     *
+     * @param $logger
+     *
+     * @throws Exception
+     */
     public function setLogger($logger)
     {
         if (!method_exists($logger, 'info'))
