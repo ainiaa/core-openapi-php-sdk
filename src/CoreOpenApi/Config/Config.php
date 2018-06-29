@@ -10,33 +10,54 @@ class Config
     private $appSecret = '';
     private $extParams = []; //扩展参数
     private $requestUrl = '';
+    private $methodList = [];
 
     private $logger;
 
     /**
      * Config constructor.
      *
-     * @param       $appKey
-     * @param       $appSecret
-     * @param array $extParams
+     * @param array $config
+     *            $extParams = [
+     *            'appKey' => 'required',//appkey  $this->getAppKey() //来获取
+     *            'appSecret' => 'required',//app secret $this->getAppSecret() //来获取
+     *            'methodList' => [ //required
+     *            'alias1' => 'real api method1',
+     *            'alias2' => 'real api method2',
+     *            ...
+     *            ],
+     *            'extParams' => [ //optional   通过 $this->getParamByKey($key) //来获取
+     *            'key' => 'value',
+     *            'key2' => 'value',
+     *            ],
+     *            ]
      *
      * @throws Exception
      */
-    public function __construct($appKey, $appSecret, $extParams = [])
+    public function __construct($config)
     {
-        if (empty($appKey))
+        if (!isset($config['appKey']) || empty($config['appKey']))
         {
-            throw new Exception('app_key is required');
+            throw new Exception('appKey is required');
         }
 
-        if (empty($appSecret))
+        if (!isset($config['appSecret']) || empty($config['appSecret']))
         {
-            throw new Exception('app_secret is required');
+            throw new Exception('appSecret is required');
         }
 
-        $this->appKey    = $appKey;
-        $this->appSecret = $appSecret;
-        $this->extParams = $extParams;
+        if (!isset($config['methodList']) || empty($config['methodList']))
+        {
+            throw new Exception('methodList is required');
+        }
+
+        $this->appKey     = $config['appKey'];
+        $this->appSecret  = $config['appSecret'];
+        $this->methodList = $config['methodList'];
+        if (isset($config['extParams']) && is_array($config['extParams']))
+        {
+            $this->extParams = $config['extParams'];
+        }
     }
 
     public function getAppKey()
@@ -56,6 +77,33 @@ class Config
     public function getExtParams()
     {
         return $this->extParams;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function getMethodByAlias($key)
+    {
+        if (isset($this->methodList[$key]))
+        {
+            return $this->methodList[$key];
+        }
+        else
+        {
+            throw new Exception($key . 'method not found.');
+        }
+    }
+
+    /**
+     * 获取method列表
+     * @return array
+     */
+    public function getMethodList()
+    {
+        return $this->methodList;
     }
 
     /**

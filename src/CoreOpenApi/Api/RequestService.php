@@ -2,7 +2,6 @@
 
 namespace CoreOpenApi\Api;
 
-use CoreOpenApi\Config\Config;
 use CoreOpenApi\Protocol\CoreClient;
 
 class RequestService
@@ -76,4 +75,16 @@ class RequestService
         return $response;
     }
 
+
+    /**
+     * 根据alias获得真实的method
+     *
+     * @param $alias
+     *
+     * @return mixed
+     */
+    public function getMethodByAlias($alias)
+    {
+        return $this->client->getMethodByAlias($alias);
+    }
 }

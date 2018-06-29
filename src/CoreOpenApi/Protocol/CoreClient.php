@@ -210,4 +210,16 @@ abstract class CoreClient
      * @throws Exception
      */
     public abstract function onResponse($resp);
+
+    /**
+     * 根据alias获得真实的method
+     *
+     * @param $alias
+     *
+     * @return mixed
+     */
+    public function getMethodByAlias($alias)
+    {
+        return $this->config->getMethodByAlias($alias);
+    }
 }
