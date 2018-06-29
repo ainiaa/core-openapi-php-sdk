@@ -30,7 +30,7 @@ abstract class CoreClient
     protected $requestService;
 
     protected $freshedToken = false;//是否刷新了token
-
+    protected $autoFreshTokenResp;//刷新token相应
     protected $recallTimes = 0;// recall次数
     protected $recallMaxTimes = 3;//最多recall 3次
 
@@ -213,7 +213,7 @@ abstract class CoreClient
 
         if ($this->freshedToken)
         {
-            $resp['freshedToken'] = $this->token;
+            $resp['autoFreshTokenResp'] = $this->autoFreshTokenResp;
         }
 
         return $resp;
@@ -253,9 +253,9 @@ abstract class CoreClient
             $token = $this->refreshToken($this->config);
             if (isset($token['token']) && $token['token'])
             {
-                $this->token        = $token['token'];
-                $this->freshedToken = true;
-
+                $this->token              = $token['token'];
+                $this->autoFreshTokenResp = $token['response'];
+                $this->freshedToken       = true;
                 return $this->execute($this->requestService);
             }
         }
