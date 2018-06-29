@@ -5,15 +5,14 @@ namespace CoreOpenApi\Protocol;
 use Exception;
 use CoreOpenApi\Api\RequestService;
 use CoreOpenApi\Config\Config;
-use stdClass;
 
 /**
  * Class CoreClient
  */
 abstract class CoreClient
 {
-    public $token;
-    public $requestUrl;
+    protected $token;
+    protected $requestUrl;
 
     /**
      * @var Config
@@ -27,6 +26,13 @@ abstract class CoreClient
     protected $charset = "UTF-8";
     protected $apiVersion = "2.0";
     protected $sdkVersion = "20180628";
+
+    protected $requestService;
+
+    protected $freshedToken = false;//是否刷新了token
+
+    protected $recallTimes = 0;// recall次数
+    protected $recallMaxTimes = 3;//最多recall 3次
 
     public function __construct($token, Config $config)
     {
@@ -117,11 +123,11 @@ abstract class CoreClient
 
     /**
      * 获得token
-     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     * @TODO   这个需要根据不同的api 实现不同的构建方法
      *
      * @param $params
      *
-     * @return mixed
+     * @return ['token' => $res, 'response' => $res]
      */
     public abstract function getToken($params);
 
@@ -170,21 +176,17 @@ abstract class CoreClient
     /**
      * @param RequestService $request
      *
-     * @return stdClass
-     * @throws Exception
+     * @return array
      */
     public function execute(RequestService $request)
     {
+        $this->requestService = $request;
         try
         {
             $request->check();
         } catch (Exception $e)
         {
-            $result          = new StdClass();
-            $result->code    = $e->getCode();
-            $result->message = $e->getMessage();
-
-            return $result;
+            return ['errCode' => $e->getCode(), 'errMsg' => $e->getMessage(), 'data' => get_object_vars($e)];
         }
         $requestParams = $this->buildRequestParams($request->getParams());
         try
@@ -194,15 +196,27 @@ abstract class CoreClient
             $resp        = $this->doRequest($requestUrl, $requestParams, $curlOptions);
             if ($this->logger != null)
             {
+                $this->logger->info("request url: " . $requestUrl);
                 $this->logger->info("request data: " . json_encode($requestParams, JSON_UNESCAPED_UNICODE));
                 $this->logger->info("response data: " . $resp);
             }
         } catch (Exception $e)
         {
-            throw $e;
+            return ['errCode' => $e->getCode(), 'errMsg' => $e->getMessage(), 'data' => get_object_vars($e)];
         }
 
-        return $this->onResponse($resp);
+        $resp = $this->onResponse($resp);
+        if ($this->isTokenExpired($resp))
+        {
+            return $this->recall($resp);
+        }
+
+        if ($this->freshedToken)
+        {
+            $resp['freshedToken'] = $this->token;
+        }
+
+        return $resp;
     }
 
     /**
@@ -214,6 +228,40 @@ abstract class CoreClient
      * @throws Exception
      */
     public abstract function onResponse($resp);
+
+    /**
+     * 是否为token过期。
+     *
+     * @param $resp
+     *
+     * @return mixed
+     */
+    public abstract function isTokenExpired($resp);
+
+    /**
+     * 重新请求
+     *
+     * @param $respObject
+     *
+     * @return mixed
+     */
+    public function recall($respObject)
+    {
+        if ($this->recallTimes < $this->recallMaxTimes)
+        {
+            $this->recallTimes++;
+            $token = $this->refreshToken($this->config);
+            if (isset($token['token']) && $token['token'])
+            {
+                $this->token        = $token['token'];
+                $this->freshedToken = true;
+
+                return $this->execute($this->requestService);
+            }
+        }
+
+        return $respObject;
+    }
 
     /**
      * 根据alias获得真实的method
