@@ -87,4 +87,22 @@ class RequestService
     {
         return $this->client->getMethodByAlias($alias);
     }
+
+    /**
+     * 获得token
+     * @return mixed
+     */
+    public function getToken($params)
+    {
+        return $this->client->getToken($params);
+    }
+
+    /**
+     * 刷新token
+     * @return mixed
+     */
+    public function refreshToken($params)
+    {
+        return $this->client->refreshToken($params);
+    }
 }
