@@ -117,25 +117,33 @@ abstract class CoreClient
 
     /**
      * 获得token
+     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     *
+     * @param $params
+     *
      * @return mixed
      */
-    public abstract function getToken();
+    public abstract function getToken($params);
 
     /**
+     * 刷新token
+     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     *
+     * @param $params
+     *
+     * @return mixed
+     */
+    public abstract function refreshToken($params);
+
+    /**
+     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     *
      * @param      $action
      * @param null $params
      *
      * @return string
      */
-    public function getRequestUri($action, $params = null)
-    {
-        if (empty($params))
-        {
-            $params = '';
-        }
-
-        return $this->requestUrl . $action . $params;
-    }
+    public abstract function getRequestUri($action, $params = null);
 
     /**
      * 获得 curl option相关配置
