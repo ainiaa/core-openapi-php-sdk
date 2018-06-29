@@ -159,6 +159,10 @@ abstract class CoreClient
         {
             return $curlOption[$method];
         }
+        else if (isset($curlOption['default']))
+        {
+            return $curlOption['default'];
+        }
 
         return [];
     }
