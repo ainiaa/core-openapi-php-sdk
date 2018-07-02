@@ -123,7 +123,7 @@ abstract class CoreClient
 
     /**
      * 获得token
-     * @TODO   这个需要根据不同的api 实现不同的构建方法
+     * @TODO   这个需要根据不同的api 实现不同的getToken方法
      *
      * @param $params
      *
@@ -133,7 +133,7 @@ abstract class CoreClient
 
     /**
      * 刷新token
-     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     * @TODO 这个需要根据不同的api 实现不同的refreshToken方法
      *
      * @param $params
      *
@@ -142,7 +142,7 @@ abstract class CoreClient
     public abstract function refreshToken($params);
 
     /**
-     * @TODO 这个需要根据不同的api 实现不同的构建方法
+     * @TODO 这个需要根据不同的api 实现不同的getRequestUri方法
      *
      * @param      $action
      * @param null $params
@@ -181,13 +181,7 @@ abstract class CoreClient
     public function execute(RequestService $request)
     {
         $this->requestService = $request;
-        try
-        {
-            $request->check();
-        } catch (Exception $e)
-        {
-            return ['errCode' => $e->getCode(), 'errMsg' => $e->getMessage(), 'data' => get_object_vars($e)];
-        }
+
         $requestParams = $this->buildRequestParams($request->getParams());
         try
         {
@@ -256,6 +250,7 @@ abstract class CoreClient
                 $this->token              = $token['token'];
                 $this->autoFreshTokenResp = $token['response'];
                 $this->freshedToken       = true;
+
                 return $this->execute($this->requestService);
             }
         }

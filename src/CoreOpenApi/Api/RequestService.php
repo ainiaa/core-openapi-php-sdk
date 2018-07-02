@@ -3,6 +3,7 @@
 namespace CoreOpenApi\Api;
 
 use CoreOpenApi\Protocol\CoreClient;
+use CoreOpenApi\VO\BaseVO;
 
 class RequestService
 {
@@ -11,8 +12,9 @@ class RequestService
      */
     protected $client;
     protected $action = '';
-    protected $params = array();
+    protected $params;
     protected $rows_num = "50";
+    protected $error;
 
     public function __construct($client)
     {
@@ -21,11 +23,17 @@ class RequestService
 
     /**
      * 检测数据
-     * todo 这个需要根据具体的业务逻辑来实现
      * @return bool
      */
-    public function check()
+    public function check(BaseVO $vo)
     {
+        if (!$vo->check())
+        {
+            $this->error = $vo->getError();
+
+            return false;
+        }
+
         return true;
     }
 
@@ -36,6 +44,11 @@ class RequestService
     public function getAction()
     {
         return $this->action;
+    }
+
+    public function getError()
+    {
+        return $this->error;
     }
 
     /**
@@ -51,17 +64,25 @@ class RequestService
      * 调用远程api
      *
      * @param string $action
-     * @param array  $params
+     * @param BaseVO $vo
      *
      * @return mixed
      */
-    public function call($action = '', $params = [])
+    public function call($action = '', BaseVO $vo)
     {
         $this->action = $action;
-        $this->params = $params;
+        if ($this->check($vo))
+        {
+            $this->params = $vo->getData();
 
-        return $this->formatResponse($this->client->execute($this));
+            return $this->formatResponse($this->client->execute($this));
+        }
+        else
+        {
+            return ['errCode' => '-999', 'errMsg' => 'invalid data', 'data' => $this->getError()];
+        }
     }
+
 
     /**
      * 格式化response
