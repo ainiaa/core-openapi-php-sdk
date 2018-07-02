@@ -79,7 +79,7 @@ class RequestService
         }
         else
         {
-            return ['errCode' => '-999', 'errMsg' => 'invalid data', 'data' => $this->getError()];
+            return ['errorCode' => '-999', 'errMsg' => 'invalid data', 'data' => $this->getError()];
         }
     }
 
