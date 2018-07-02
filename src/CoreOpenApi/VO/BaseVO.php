@@ -91,9 +91,13 @@ class BaseVO implements Arrayable
     {
         $validate = new Validate($this->rule);
         if (!$validate->batch()->check($this->toArray()))
-        {
+        { //当前VO字段不符合条件
             $this->error = $validate->getError();
 
+            return false;
+        }
+        else if ($this->error)
+        {//嵌套的VO字段不符合条件
             return false;
         }
 
