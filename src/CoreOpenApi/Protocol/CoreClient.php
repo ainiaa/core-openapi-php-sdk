@@ -45,6 +45,26 @@ abstract class CoreClient
     }
 
     /**
+     * 动态设置token
+     *
+     * @param $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * 动态设置logger
+     *
+     * @param $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * 根据构造好的参数请求api
      *
      * @param string      $url         请求地址
