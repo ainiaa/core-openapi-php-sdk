@@ -20,8 +20,8 @@ abstract class CoreClient
     protected $config;
     private $logger;
 
-    protected $connectTimeout = 3000;
-    protected $readTimeout = 60000;
+    protected $connectTimeout = 3000;//3s
+    protected $readTimeout = 5000;//5s
 
     protected $charset = "UTF-8";
     protected $apiVersion = "2.0";
@@ -83,11 +83,11 @@ abstract class CoreClient
 
         if ($this->readTimeout)
         {
-            curl_setopt($ch, CURLOPT_TIMEOUT, $this->readTimeout);
+            curl_setopt($ch, CURLOPT_TIMEOUT_MS, $this->readTimeout);
         }
         if ($this->connectTimeout)
         {
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connectTimeout);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, $this->connectTimeout);
         }
 
         if (stripos($url, 'https') === 0) //https请求
