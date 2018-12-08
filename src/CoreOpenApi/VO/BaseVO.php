@@ -105,4 +105,22 @@ class BaseVO implements Arrayable
 
         return true;
     }
+
+    /**
+     * 过滤特殊字符 (word里面的 不间断空格)
+     * @see  https://blog.csdn.net/worldzhy/article/details/53041501
+     *
+     * @param $content
+     *
+     * @return mixed
+     */
+    public function stripSpecialCharacter($content)
+    {
+        if (is_string($content))
+        {
+            $content = str_replace(chr(194) . chr(160), ' ', $content);
+        }
+
+        return $content;
+    }
 }
