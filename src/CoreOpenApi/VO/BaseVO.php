@@ -40,6 +40,7 @@ class BaseVO implements Arrayable
                 }
                 else if (is_subclass_of($value, 'CoreOpenApi\VO\BaseVO'))
                 {
+                    /** @var BaseVO $value */
                     $data = $value->getData();
                     if (!$value->hasError())
                     {
@@ -89,6 +90,7 @@ class BaseVO implements Arrayable
      */
     public function check()
     {
+        return true;//屏蔽校验功能
         $validate = new Validate($this->rule);
         if (!$validate->batch()->check($this->toArray()))
         { //当前VO字段不符合条件

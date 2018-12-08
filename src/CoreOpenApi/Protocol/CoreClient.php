@@ -21,7 +21,7 @@ abstract class CoreClient
     private $logger;
 
     protected $connectTimeout = 3000;//3s
-    protected $readTimeout = 5000;//5s
+    protected $readTimeout = 10000;//10s
 
     protected $charset = "UTF-8";
     protected $apiVersion = "2.0";
