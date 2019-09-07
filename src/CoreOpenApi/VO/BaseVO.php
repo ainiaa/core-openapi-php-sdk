@@ -118,7 +118,7 @@ class BaseVO implements Arrayable
     {
         if (is_string($content))
         {
-            $content = str_replace([chr(194) . chr(160),'\'','º'], [' '.'‘',' '], $content);
+            $content = str_replace([chr(194) . chr(160),'\'','º','•'], [' ','‘','*', '*'], $content);
         }
 
         return $content;

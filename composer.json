@@ -2,7 +2,7 @@
     "name": "ddmc/core-openapi-php-sdk",
     "description": "core-openapi-php-sdk",
     "license": "MIT",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "authors": [
         {
             "name": "Jeff Liu",
