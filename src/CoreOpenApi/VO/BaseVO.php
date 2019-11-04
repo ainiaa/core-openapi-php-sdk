@@ -107,9 +107,9 @@ class BaseVO implements Arrayable
     }
 
     /**
-     * 过滤特殊字符 (word里面的 不间断空格)
+     * 过滤特殊字符 (word里面的 不间断空格，单引号，°，圆点，&)
      * @see  https://blog.csdn.net/worldzhy/article/details/53041501
-     *
+     * @see  https://www.ascii-code.com/
      * @param $content
      *
      * @return mixed
@@ -118,7 +118,7 @@ class BaseVO implements Arrayable
     {
         if (is_string($content))
         {
-            $content = str_replace([chr(194) . chr(160),'\'','º','•'], [' ','‘','*', '*'], $content);
+            $content = str_replace([chr(194) . chr(160),'\'','º','•','&'], [' ','‘','*', '*','*'], $content);
         }
 
         return $content;
